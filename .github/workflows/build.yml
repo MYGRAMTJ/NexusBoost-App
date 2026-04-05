@@ -15,11 +15,13 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libtool-bin pkg-config autoconf automake libffi-dev
+          sudo apt install -y libtool-bin pkg-config autoconf automake libffi-dev gettext
           pip install --upgrade buildozer cython==0.29.33
 
       - name: Build with Buildozer
-        run: yes | buildozer android debug
+        run: buildozer android debug
+        env:
+          BUILDOZER_ALLOW_KIVY_ITERABLE_ERROR: 1
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
