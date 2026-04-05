@@ -1,4 +1,4 @@
-name: Build APK Final
+name: Build APK NexusBoost Final
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
@@ -24,17 +24,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install "cython<3.0" buildozer virtualenv setuptools
 
-      - name: Build with Buildozer
+      - name: Build APK with Auto-Fix
         timeout-minutes: 60
         run: |
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
-          # Ин сатри муҳимтарин:
+          # Тоза кардани кэши хатогидори Android SDK
+          rm -rf .buildozer/android/platform/build*
+          # Оғози сохтани мустақим
           yes | buildozer -v android debug
+        env:
+          BUILDOZER_ALLOW_KIVY_ITERABLE_ERROR: 1
+          ACCEPT_SDK_LICENSE: "yes"
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: NexusBoost-App
+          name: NexusBoost-Ready-App
           path: bin/*.apk
