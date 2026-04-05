@@ -1,4 +1,4 @@
-name: Build APK Ultra
+name: Build APK Final
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
@@ -26,9 +26,9 @@ jobs:
 
       - name: Build APK
         run: |
+          # Мо 'clean'-ро тоза кардем, то файлҳои лозимӣ нест нашаванд
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
-          buildozer android clean
           yes | buildozer -v android debug
         env:
           BUILDOZER_ALLOW_KIVY_ITERABLE_ERROR: 1
