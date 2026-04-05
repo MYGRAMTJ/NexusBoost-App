@@ -1,5 +1,5 @@
-name: Build APK NexusBoost
-on: [push, pull_request]
+name: Build APK Ultra
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
@@ -13,29 +13,33 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install System Dependencies
+      - name: Install System Essentials
         run: |
           sudo apt update
           sudo apt install -y build-essential libtool-bin pkg-config autoconf automake \
             libffi-dev gettext libssl-dev cmake ant python3-dev zip unzip openjdk-17-jdk
 
-      - name: Install Python Tools
+      - name: Install Python Environment
         run: |
           python -m pip install --upgrade pip
           pip install "cython<3.0" buildozer virtualenv setuptools
 
-      - name: Build with Buildozer
+      - name: Build APK with Auto-Fix
         run: |
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
+          # Аввал тоза мекунем, ки хатои кӯҳна намонад
           buildozer android clean
+          # Оғози сохтан бо тасдиқи автоматӣ
           yes | buildozer -v android debug
         env:
           BUILDOZER_ALLOW_KIVY_ITERABLE_ERROR: 1
           ACCEPT_SDK_LICENSE: "yes"
 
-      - name: Upload APK
+      - name: Find and Upload APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: NexusBoost-Final-APK
-          path: ./**/*.apk
+          name: NexusBoost-App
+          # Ин сатр худаш файлро меёбад, ҳатто агар дар ҷои ғайричашмдошт бошад
+          path: bin/*.apk
