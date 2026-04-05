@@ -1,9 +1,9 @@
-name: Build APK NexusBoost Final
-on: [push, pull_request, workflow_dispatch]
+name: Build APK Fast Mode
+on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -13,6 +13,12 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Cache Buildozer
+        uses: actions/cache@v4
+        with:
+          path: .buildozer
+          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+
       - name: Install Dependencies
         run: |
           sudo apt update
@@ -20,22 +26,16 @@ jobs:
             libffi-dev gettext libssl-dev cmake ant python3-dev zip unzip openjdk-17-jdk
 
       - name: Build APK
-        timeout-minutes: 60
         run: |
           pip install --upgrade pip
           pip install "cython<3.0" buildozer virtualenv setuptools
-          mkdir -p ~/.android
-          touch ~/.android/repositories.cfg
-          # Тоза кардани файлҳои вазнин пеш аз сохтан
-          find . -name "*test*" -type d -exec rm -rf {} +
-          # Оғози сохтан
+          # Ин фармон файлҳои вазнинро, ки боиси хато мешаванд, пешакӣ нест мекунад
+          find . -name "*test*" -type d -exec rm -rf {} + || true
           yes | buildozer -v android debug
         env:
           BUILDOZER_ALLOW_KIVY_ITERABLE_ERROR: 1
-          ACCEPT_SDK_LICENSE: "yes"
 
       - name: Upload APK
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: NexusBoost-App
