@@ -1,36 +1,68 @@
-name: Build APK
-on: [push, pull_request]
+name: Build APK NexusBoost
+on: 
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Install System Dependencies
         run: |
           sudo apt update
-          sudo apt install -y libtool-bin pkg-config autoconf automake libffi-dev gettext
-          pip install --upgrade buildozer cython==0.29.33
+          sudo apt install -y \
+            build-essential \
+            libtool-bin \
+            pkg-config \
+            autoconf \
+            automake \
+            libffi-dev \
+            gettext \
+            libssl-dev \
+            cmake \
+            ant \
+            python3-dev \
+            cython \
+            zip \
+            unzip \
+            openjdk-17-jdk
 
-      - name: Build with Buildozer
+      - name: Install Python Tools
         run: |
-          # Қабули автоматӣ барои ҳамаи лицензияҳои Android
+          pip install --upgrade pip
+          pip install --upgrade buildozer
+          pip install --upgrade "cython<3.0"
+          pip install --upgrade virtualenv
+
+      - name: Prepare Android SDK and Licenses
+        run: |
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
-          yes | buildozer android debug
+          # Қабули пешакии ҳамаи шартномаҳои Android барои пешгирӣ аз "Aidl not found"
+          yes | buildozer android debug || true
+          # Ин фармон танҳо барои он аст, ки SDK бор шавад, агар хато диҳад ҳам муҳим нест
+
+      - name: Final Build with Buildozer
+        run: |
+          # Истифодаи 'yes' барои тасдиқи автоматӣ ва 'log_level 2' барои дидани ҳамаи сатрҳо
+          yes | buildozer -v android debug
         env:
           BUILDOZER_ALLOW_KIVY_ITERABLE_ERROR: 1
-          # Ин сатр барои гузаштан аз хатогиҳои Aidl кумак мекунад
           ACCEPT_SDK_LICENSE: "yes"
 
-      - name: Upload APK
+      - name: Upload Finished APK
         uses: actions/upload-artifact@v4
         with:
-          name: NexusBoost-APK
+          name: NexusBoost-Final-APK
           path: bin/*.apk
+          if-no-files-found: error
