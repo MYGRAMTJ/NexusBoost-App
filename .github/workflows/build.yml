@@ -32,29 +32,27 @@ jobs:
             cmake \
             ant \
             python3-dev \
-            cython \
             zip \
             unzip \
             openjdk-17-jdk
 
       - name: Install Python Tools
         run: |
-          pip install --upgrade pip
-          pip install --upgrade buildozer
-          pip install --upgrade "cython<3.0"
-          pip install --upgrade virtualenv
+          python -m pip install --upgrade pip
+          # Насби Cython маҳз тавассути pip барои пешгирӣ аз хатогии apt
+          pip install "cython<3.0"
+          pip install buildozer virtualenv
 
       - name: Prepare Android SDK and Licenses
         run: |
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
-          # Қабули пешакии ҳамаи шартномаҳои Android барои пешгирӣ аз "Aidl not found"
+          # Қабули автоматӣ ва омодасозии муҳити Android
           yes | buildozer android debug || true
-          # Ин фармон танҳо барои он аст, ки SDK бор шавад, агар хато диҳад ҳам муҳим нест
 
       - name: Final Build with Buildozer
         run: |
-          # Истифодаи 'yes' барои тасдиқи автоматӣ ва 'log_level 2' барои дидани ҳамаи сатрҳо
+          # Иҷрои сохтмони асосӣ бо логи муфассал
           yes | buildozer -v android debug
         env:
           BUILDOZER_ALLOW_KIVY_ITERABLE_ERROR: 1
