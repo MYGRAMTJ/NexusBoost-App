@@ -19,9 +19,15 @@ jobs:
           pip install --upgrade buildozer cython==0.29.33
 
       - name: Build with Buildozer
-        run: buildozer android debug
+        run: |
+          # Қабули автоматӣ барои ҳамаи лицензияҳои Android
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          yes | buildozer android debug
         env:
           BUILDOZER_ALLOW_KIVY_ITERABLE_ERROR: 1
+          # Ин сатр барои гузаштан аз хатогиҳои Aidl кумак мекунад
+          ACCEPT_SDK_LICENSE: "yes"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
