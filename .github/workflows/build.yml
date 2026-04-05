@@ -24,15 +24,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install "cython<3.0" buildozer virtualenv setuptools
 
-      - name: Build APK
+      - name: Build with Buildozer
+        timeout-minutes: 60
         run: |
-          # Мо 'clean'-ро тоза кардем, то файлҳои лозимӣ нест нашаванд
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
+          # Ин сатри муҳимтарин:
           yes | buildozer -v android debug
-        env:
-          BUILDOZER_ALLOW_KIVY_ITERABLE_ERROR: 1
-          ACCEPT_SDK_LICENSE: "yes"
 
       - name: Upload APK
         if: always()
