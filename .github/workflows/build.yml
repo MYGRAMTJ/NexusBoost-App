@@ -8,7 +8,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -24,22 +24,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install "cython<3.0" buildozer virtualenv setuptools
 
-      - name: Build APK with Auto-Fix
+      - name: Build APK
         run: |
           mkdir -p ~/.android
           touch ~/.android/repositories.cfg
-          # Аввал тоза мекунем, ки хатои кӯҳна намонад
           buildozer android clean
-          # Оғози сохтан бо тасдиқи автоматӣ
           yes | buildozer -v android debug
         env:
           BUILDOZER_ALLOW_KIVY_ITERABLE_ERROR: 1
           ACCEPT_SDK_LICENSE: "yes"
 
-      - name: Find and Upload APK
+      - name: Upload APK
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: NexusBoost-App
-          # Ин сатр худаш файлро меёбад, ҳатто агар дар ҷои ғайричашмдошт бошад
           path: bin/*.apk
