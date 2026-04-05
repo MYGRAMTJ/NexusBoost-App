@@ -5,7 +5,7 @@ package.domain = org.nexus
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
-source.exclude_patterns = tests, bin, venv, .git, lib/test/*, **/test*, **/tests*, *.pyc, __pycache__/*
+source.exclude_patterns = tests, bin, venv, .git, lib/test/*, **/test*, **/tests*, *.pyc, __pycache__/*, .buildozer/*
 requirements = python3,kivy==2.3.0
 
 orientation = portrait
